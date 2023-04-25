@@ -2,6 +2,7 @@
 import os
 
 import mkdocs_gen_files
+
 from kiara.context import Kiara
 
 kiara = Kiara.instance()
@@ -19,8 +20,9 @@ The formatting here will be improved later on, for now this should be enough to 
 BASE_PACKAGE = "kiara_plugin.dh_benelux_2023"
 
 
-
-for module_type in kiara.module_mgmt.find_modules_for_package(BASE_PACKAGE, include_pipelines=False).keys():
+for module_type in kiara.module_mgmt.find_modules_for_package(
+    BASE_PACKAGE, include_pipelines=False
+).keys():
 
     if module_type == "pipeline":
         continue
@@ -46,7 +48,9 @@ The formatting here will be improved later on, for now this should be enough to 
 
 """
 
-for module_type in kiara.module_mgmt.find_modules_for_package(BASE_PACKAGE, include_core_modules=False):
+for module_type in kiara.module_mgmt.find_modules_for_package(
+    BASE_PACKAGE, include_core_modules=False
+):
 
     if module_type == "pipeline":
         continue
@@ -61,5 +65,3 @@ for module_type in kiara.module_mgmt.find_modules_for_package(BASE_PACKAGE, incl
 
 with mkdocs_gen_files.open(pipelines_file_path, "w") as f:
     f.write(pipelines_page_content)
-
-

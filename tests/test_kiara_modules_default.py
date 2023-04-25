@@ -3,8 +3,9 @@
 
 """Tests for `kiara_plugin.dh_benelux_2023` package."""
 
-import kiara_plugin.dh_benelux_2023
 import pytest  # noqa
+
+import kiara_plugin.dh_benelux_2023
 
 
 def test_assert():
