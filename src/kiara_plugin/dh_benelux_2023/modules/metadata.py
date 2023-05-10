@@ -87,3 +87,45 @@ class GetLCCNMetadata(KiaraModule):
 
        
         outputs.set_value("table_output", sources)
+
+
+class GetTextStats(KiaraModule):
+    """
+    This module will add columns with words and characters count to a table containing text content.
+    """
+
+    # _config_cls = ExampleModuleConfig
+    _module_type_name = "get_text_stats"
+
+    def create_inputs_schema(self):
+        
+        return {
+            "table_input": {
+                "type": "table",
+                "doc": "The corpus for which we want to add words and characters count.",
+            },
+            "column_name": {
+                "type": "string",
+                "doc": "The column containing the text for which we want the count."
+            }
+        }
+
+    def create_outputs_schema(self):
+        return {
+            "table_output": {
+                "type": "table",
+                "doc": "Augmented table containing words and characters count."
+            }
+        }
+
+    def process(self, inputs, outputs) -> None:
+
+        table_obj = inputs.get_value_obj("table_input")
+        column_name = inputs.get_value_obj("column_name").data
+
+        sources = table_obj.data.to_pandas()
+        
+        sources['chars_count'] = sources[column_name].apply(lambda x: len(x))
+        sources['words_count'] = sources[column_name].apply(lambda x: len(x.split()))
+       
+        outputs.set_value("table_output", sources)
