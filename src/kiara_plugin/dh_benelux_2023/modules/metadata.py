@@ -7,31 +7,35 @@ from kiara.exceptions import KiaraProcessingException
 import re
 import pandas as pd
 
-class GetLCCNMetadataConfig(KiaraModuleConfig):
-
-    separator: str = Field(
-        description="The seperator between the two strings.", default=" - "
-    )
 
 
 class GetLCCNMetadata(KiaraModule):
     """
-
+    This module will get metadata from strings that comply with LCCN pattern: '/sn86069873/1900-01-05/' to get the publication references and the dates and add those informations as two new columns.
+    In addition, if a mapping scheme is provided between publication references and publication names, it will add a column with the publication names.
+    Such a map is provided in the form of a list of lists with publication references and publication names in the same order.
+    Here is an example of how it should look:
+    [["2012271201","sn85054967","sn93053873"],["Cronaca_Sovversiva","Il_Patriota","L'Indipendente"]]
     """
 
     # _config_cls = ExampleModuleConfig
-    _module_type_name = "dh_benelux_2023.get_lccn_metadata"
+    _module_type_name = "get_lccn_metadata"
 
     def create_inputs_schema(self):
         
         return {
             "table_input": {
                 "type": "table",
-                "doc": "The corpus for which we want to extract metadata from file names."
+                "doc": "The corpus for which we want to get metadata from file names.",
             },
             "column_name": {
                 "type": "string",
                 "doc": "The column containing metadata. In order to work, file names need to comply with LCCN pattern '/sn86069873/1900-01-05/' containing publication reference and date."
+            },
+            "map": {
+                "type": "list",
+                "doc": "List of lists of unique publications references and publication names in the collection provided in the same order.",
+                "optional": True,
             }
         }
 
@@ -40,19 +44,20 @@ class GetLCCNMetadata(KiaraModule):
             "table_output": {
                 "type": "table",
                 "doc": "Augmented table containing extracted metadata."
-            },
-            "publications_ref": {
-                "type": "list",
-                "doc": "List of unique publications refs in table."
-             },
+            }
         }
 
     def process(self, inputs, outputs) -> None:
 
         table_obj = inputs.get_value_obj("table_input")
         column_name = inputs.get_value_obj("column_name").data
+        try:
+            pub_refs = inputs.get_value_obj("map").data[0]
+            pub_names = inputs.get_value_obj("map").data[1]
+        except:
+            pass
 
-        df = table_obj.data.to_pandas()
+        sources = table_obj.data.to_pandas()
 
          # get publication ref from file name
         def get_ref(file):
@@ -68,17 +73,17 @@ class GetLCCNMetadata(KiaraModule):
                 raise KiaraProcessingException(f"Can't process corpus, invalid format for file name: {file}")
             return date_match[0]
         
-        df['date'] = df['file_name'].apply(lambda x: get_date(x))
+        # add date column
+        sources['date'] = sources['file_name'].apply(lambda x: get_date(x))
 
-        df['publication'] = df[column_name].apply(lambda x: get_ref(x))
-        
-        df['date'] = pd.to_datetime(df['date'])
-        df = df.sort_values(by='date')
+        # add publication reference column
+        sources['pub_ref'] = sources[column_name].apply(lambda x: get_ref(x))
 
-        publications = df['publication'].unique().tolist()
-        # counts = [df['publication'].value_counts().index.to_list(),df['publication'].value_counts().to_list()]
+        try:
+            # if map with publications names available, add publication names
+            sources['pub_name'] = sources['pub_ref'].replace(pub_refs, pub_names)
+        except:
+            pass
 
-        outputs.set_value("table_output", df)
-        # unique publications references useful at the next step to map publications references with publications names
-        outputs.set_value("publications_ref", publications)
-        # outputs.set_value("publications_count", counts)
+       
+        outputs.set_value("table_output", sources)
