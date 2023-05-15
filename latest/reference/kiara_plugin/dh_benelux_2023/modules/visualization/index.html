@@ -790,8 +790,7 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 
         <details class="quote">
           <summary>Source code in <code>/opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/kiara_plugin/dh_benelux_2023/modules/visualization.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
@@ -834,7 +833,24 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VizDataQuery</span><span class="p">(</span><span class="n">KiaraModule</span><span class="p">):</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VizDataQuery</span><span class="p">(</span><span class="n">KiaraModule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This module processes a dataset to display a visualization of the corpus aggregated by a period of time.</span>
 <span class="sd">    It aims at serving as a visual aid to create a subset of a table.</span>
@@ -853,14 +869,18 @@ It aims at serving as a visual aid to create a subset of a table.</p>
             <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The column that contains publication names or ref/id.&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;table&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The table for which the distribution is needed.&quot;</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">create_outputs_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The query to pass to the sql query module.&quot;</span>
+            <span class="s2">&quot;viz_data&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The aggregated data as a list of dicts for visualization purposes.&quot;</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
@@ -869,16 +889,28 @@ It aims at serving as a visual aid to create a subset of a table.</p>
         <span class="n">agg</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">get_value_obj</span><span class="p">(</span><span class="s2">&quot;distribution&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
         <span class="n">col</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">get_value_obj</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
 
+        <span class="n">table_obj</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">get_value_data</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">)</span>
+        <span class="n">arrow_table</span> <span class="o">=</span> <span class="n">table_obj</span><span class="o">.</span><span class="n">arrow_table</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">arrow_table</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+
+        <span class="n">sources</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">sources</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="n">agg</span> <span class="o">==</span> <span class="s1">&#39;month&#39;</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(month, &#39;/&#39;, year), &#39;%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM data GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date))&quot;</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(month, &#39;/&#39;, year), &#39;%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM sources GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date))&quot;</span>
 
         <span class="k">elif</span> <span class="n">agg</span> <span class="o">==</span> <span class="s1">&#39;year&#39;</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(year, &#39;%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM data GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date))&quot;</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(year, &#39;%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM sources GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date))&quot;</span>
 
         <span class="k">elif</span> <span class="n">agg</span> <span class="o">==</span> <span class="s1">&#39;day&#39;</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(&#39;01/&#39;, month, &#39;/&#39;, year), &#39;%d/%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM data GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date), DAY(date))&quot;</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(&#39;01/&#39;, month, &#39;/&#39;, year), &#39;%d/%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM sources GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date), DAY(date))&quot;</span>
 
-        <span class="n">outputs</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+        <span class="n">queried_df</span> <span class="o">=</span> <span class="n">duckdb</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
+
+        <span class="n">queried_df</span> <span class="o">=</span> <span class="n">queried_df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="n">viz_data</span> <span class="o">=</span> <span class="n">queried_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
+
+        <span class="n">outputs</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;viz_data&quot;</span><span class="p">,</span> <span class="n">viz_data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -908,8 +940,7 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 
       <details class="quote">
         <summary>Source code in <code>/opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/kiara_plugin/dh_benelux_2023/modules/visualization.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
-<span class="normal">20</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
@@ -919,7 +950,12 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_inputs_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_inputs_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="p">{</span>
          <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -929,6 +965,10 @@ It aims at serving as a visual aid to create a subset of a table.</p>
         <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
             <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The column that contains publication names or ref/id.&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;table&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The table for which the distribution is needed.&quot;</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -951,17 +991,17 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 
       <details class="quote">
         <summary>Source code in <code>/opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/kiara_plugin/dh_benelux_2023/modules/visualization.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_outputs_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_outputs_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The query to pass to the sql query module.&quot;</span>
+        <span class="s2">&quot;viz_data&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;The aggregated data as a list of dicts for visualization purposes.&quot;</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -984,12 +1024,7 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 
       <details class="quote">
         <summary>Source code in <code>/opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/kiara_plugin/dh_benelux_2023/modules/visualization.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
@@ -998,21 +1033,50 @@ It aims at serving as a visual aid to create a subset of a table.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
     <span class="n">agg</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">get_value_obj</span><span class="p">(</span><span class="s2">&quot;distribution&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
     <span class="n">col</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">get_value_obj</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
 
+    <span class="n">table_obj</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">get_value_data</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">)</span>
+    <span class="n">arrow_table</span> <span class="o">=</span> <span class="n">table_obj</span><span class="o">.</span><span class="n">arrow_table</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">arrow_table</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+
+    <span class="n">sources</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">sources</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+
     <span class="k">if</span> <span class="n">agg</span> <span class="o">==</span> <span class="s1">&#39;month&#39;</span><span class="p">:</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(month, &#39;/&#39;, year), &#39;%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM data GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date))&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(month, &#39;/&#39;, year), &#39;%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM sources GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date))&quot;</span>
 
     <span class="k">elif</span> <span class="n">agg</span> <span class="o">==</span> <span class="s1">&#39;year&#39;</span><span class="p">:</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(year, &#39;%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM data GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date))&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(year, &#39;%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM sources GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date))&quot;</span>
 
     <span class="k">elif</span> <span class="n">agg</span> <span class="o">==</span> <span class="s1">&#39;day&#39;</span><span class="p">:</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(&#39;01/&#39;, month, &#39;/&#39;, year), &#39;%d/%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM data GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date), DAY(date))&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT strptime(concat(&#39;01/&#39;, month, &#39;/&#39;, year), &#39;%d/%m/%Y&#39;) as date, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> as publication_name, count FROM (SELECT YEAR(date) as year, MONTH(date) as month, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, count(*) as count FROM sources GROUP BY </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">, YEAR(date), MONTH(date), DAY(date))&quot;</span>
 
-    <span class="n">outputs</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+    <span class="n">queried_df</span> <span class="o">=</span> <span class="n">duckdb</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
+
+    <span class="n">queried_df</span> <span class="o">=</span> <span class="n">queried_df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">viz_data</span> <span class="o">=</span> <span class="n">queried_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
+
+    <span class="n">outputs</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;viz_data&quot;</span><span class="p">,</span> <span class="n">viz_data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
