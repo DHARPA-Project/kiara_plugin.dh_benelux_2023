@@ -17,7 +17,7 @@
         <link rel="next" href="../../usage/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -306,6 +306,27 @@
         <li class="md-nav__item">
   <a href="#kiara_info.operations.dh_benelux_2023.example" class="md-nav__link">
     dh_benelux_2023.example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kiara_info.operations.get_lccn_metadata" class="md-nav__link">
+    get_lccn_metadata
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kiara_info.operations.get_text_stats" class="md-nav__link">
+    get_text_stats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kiara_info.operations.viz_data_query" class="md-nav__link">
+    viz_data_query
   </a>
   
 </li>
@@ -605,6 +626,27 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#kiara_info.operations.get_lccn_metadata" class="md-nav__link">
+    get_lccn_metadata
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kiara_info.operations.get_text_stats" class="md-nav__link">
+    get_text_stats
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kiara_info.operations.viz_data_query" class="md-nav__link">
+    viz_data_query
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -710,6 +752,235 @@ kiara run core_types.example text_1=&quot;xxx&quot; text_2=&quot;yyy&quot;
 </table>
 </td>
     </tr>
+</table><h3 id="kiara_info.operations.get_lccn_metadata"><code>get_lccn_metadata</code><a class="headerlink" href="#kiara_info.operations.get_lccn_metadata" title="Permanent link">&para;</a></h3>
+
+
+<table>
+    <tr>
+        <td>Documentation</td>
+        <td><p>This module will get metadata from strings that comply with LCCN pattern: '/sn86069873/1900-01-05/' to get the publication references and the dates and add those informations as two new columns.</p>
+<p>In addition, if a mapping scheme is provided between publication references and publication names, it will add a column with the publication names.
+Such a map is provided in the form of a list of lists with publication references and publication names in the same order.
+Here is an example of how it should look:
+[[&quot;2012271201&quot;,&quot;sn85054967&quot;,&quot;sn93053873&quot;],[&quot;Cronaca_Sovversiva&quot;,&quot;Il_Patriota&quot;,&quot;L'Indipendente&quot;]]</p>
+</td>
+    </tr>
+    <tr>
+        <td>Inputs</td>
+        <td>
+<table>
+    <thead>
+    <tr>
+        <th>field name</th>
+        <th>type</th>
+        <th>description</th>
+        <th>required</th>
+        <th>default</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+
+<td>table_input</td>
+<td>table</td>
+<td>The corpus for which we want to get metadata from file names.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+<td>column_name</td>
+<td>string</td>
+<td>The column containing metadata. In order to work, file names need to comply with LCCN pattern &#39;/sn86069873/1900-01-05/&#39; containing publication reference and date.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+<td>map</td>
+<td>list</td>
+<td>List of lists of unique publications references and publication names in the collection provided in the same order.</td>
+<td>no</td>
+<td></td>
+    </tr>
+
+    </tbody>
+</table>
+</td>
+    </tr>
+    <tr>
+        <td>Outputs</td>
+        <td>
+<table>
+    <thead>
+    <tr>
+        <th>field name</th>
+        <th>type</th>
+        <th>description</th>
+        <th>required</th>
+        <th>default</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+
+<td>table_output</td>
+<td>table</td>
+<td>Augmented table containing extracted metadata.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+    </tbody>
+</table>
+</td>
+    </tr>
+</table><h3 id="kiara_info.operations.get_text_stats"><code>get_text_stats</code><a class="headerlink" href="#kiara_info.operations.get_text_stats" title="Permanent link">&para;</a></h3>
+
+
+<table>
+    <tr>
+        <td>Documentation</td>
+        <td><p>This module will add columns with words and characters count to a table containing text content.</p>
+</td>
+    </tr>
+    <tr>
+        <td>Inputs</td>
+        <td>
+<table>
+    <thead>
+    <tr>
+        <th>field name</th>
+        <th>type</th>
+        <th>description</th>
+        <th>required</th>
+        <th>default</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+
+<td>table_input</td>
+<td>table</td>
+<td>The corpus for which we want to add words and characters count.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+<td>column_name</td>
+<td>string</td>
+<td>The column containing the text for which we want the count.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+    </tbody>
+</table>
+</td>
+    </tr>
+    <tr>
+        <td>Outputs</td>
+        <td>
+<table>
+    <thead>
+    <tr>
+        <th>field name</th>
+        <th>type</th>
+        <th>description</th>
+        <th>required</th>
+        <th>default</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+
+<td>table_output</td>
+<td>table</td>
+<td>Augmented table containing words and characters count.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+    </tbody>
+</table>
+</td>
+    </tr>
+</table><h3 id="kiara_info.operations.viz_data_query"><code>viz_data_query</code><a class="headerlink" href="#kiara_info.operations.viz_data_query" title="Permanent link">&para;</a></h3>
+
+
+<table>
+    <tr>
+        <td>Documentation</td>
+        <td><p>This module processes a dataset to display a visualization of the corpus aggregated by a period of time.</p>
+<p>It aims at serving as a visual aid to create a subset of a table.</p>
+</td>
+    </tr>
+    <tr>
+        <td>Inputs</td>
+        <td>
+<table>
+    <thead>
+    <tr>
+        <th>field name</th>
+        <th>type</th>
+        <th>description</th>
+        <th>required</th>
+        <th>default</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+
+<td>distribution</td>
+<td>string</td>
+<td>The wished data periodicity to display on visualization, values can be either &#39;day&#39;,&#39;month&#39; or &#39;year&#39;.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+<td>column</td>
+<td>string</td>
+<td>The column that contains publication names or ref/id.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+<td>table</td>
+<td>table</td>
+<td>The table for which the distribution is needed.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+    </tbody>
+</table>
+</td>
+    </tr>
+    <tr>
+        <td>Outputs</td>
+        <td>
+<table>
+    <thead>
+    <tr>
+        <th>field name</th>
+        <th>type</th>
+        <th>description</th>
+        <th>required</th>
+        <th>default</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+
+<td>viz_data</td>
+<td>list</td>
+<td>The aggregated data as a list of dicts for visualization purposes.</td>
+<td>yes</td>
+<td></td>
+    </tr>
+
+    </tbody>
+</table>
+</td>
+    </tr>
 </table>
 
 
@@ -751,7 +1022,7 @@ kiara run core_types.example text_1=&quot;xxx&quot; text_2=&quot;yyy&quot;
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c2be25ad.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
       
     
   </body>
