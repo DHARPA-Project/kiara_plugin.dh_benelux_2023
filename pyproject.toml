@@ -37,6 +37,7 @@ dependencies = [
     "seaborn==0.12.2",
     "observable-jupyter==0.1.14",
     "pandas==2.0.1",
+    "matplotlib==3.7.1",
 ]
 dynamic = ["version"]
 
