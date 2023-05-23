@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from pydantic import Field
+from kiara.api import KiaraModule
 
-from kiara.api import KiaraModule, KiaraModuleConfig, ValueMap, ValueMapSchema
-from kiara.exceptions import KiaraProcessingException
 import re
 import pandas as pd
 import duckdb
