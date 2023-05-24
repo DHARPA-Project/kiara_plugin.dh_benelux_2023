@@ -7,10 +7,9 @@ import pandas as pd
 KIARA_METADATA = {
     "authors": [
         {"name": "Lorella Viola", "email": "lorella.viola@uni.lu"},
-        {"name": "Mariella De Crouy", "email": "mariella.decrouychanel@uni.lu"},
-    ]
+    ],
+    "description": " ",
 }
-
 
 
 class GetLCCNMetadata(KiaraModule):
