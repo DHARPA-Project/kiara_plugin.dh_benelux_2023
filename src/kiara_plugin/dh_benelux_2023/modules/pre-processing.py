@@ -4,6 +4,13 @@ from kiara_plugin.tabular.models.array import KiaraArray
 import pyarrow as pa
 import gensim
 
+KIARA_METADATA = {
+    "authors": [
+        {"name": "Lorella Viola", "email": "lorella.viola@uni.lu"},
+        {"name": "Mariella De Crouy", "email": "mariella.decrouychanel@uni.lu"},
+    ]
+}
+
 class GetBigrams(KiaraModule):
     """
     This module computes bigrams and/or trigrams.

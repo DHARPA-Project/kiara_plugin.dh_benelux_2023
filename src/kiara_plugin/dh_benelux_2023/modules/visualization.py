@@ -6,6 +6,13 @@ import re
 import pandas as pd
 import duckdb
 
+KIARA_METADATA = {
+    "authors": [
+        {"name": "Lorella Viola", "email": "lorella.viola@uni.lu"},
+        {"name": "Mariella De Crouy", "email": "mariella.decrouychanel@uni.lu"},
+    ]
+}
+
 class VizDataQuery(KiaraModule):
     """
     This module processes a dataset to display a visualization of the corpus aggregated by a period of time.
