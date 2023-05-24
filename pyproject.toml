@@ -31,7 +31,7 @@ classifiers = [
 ]
 dependencies = [
     "kiara>=0.4.39",
-    "kiara_plugin.onboarding>=0.4.3",
+    "kiara_plugin.onboarding>=0.4.4",
     "kiara_plugin.tabular>=0.4.25",
     "kiara_plugin.language_processing==0.4.13",
     "seaborn==0.12.2",
