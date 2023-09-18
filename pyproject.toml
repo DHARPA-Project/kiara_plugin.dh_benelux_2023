@@ -30,9 +30,9 @@ classifiers = [
     "Programming Language :: Python :: 3.11"
 ]
 dependencies = [
-    "kiara>=0.4.39",
-    "kiara_plugin.onboarding>=0.4.4",
-    "kiara_plugin.tabular>=0.4.25",
+    "kiara==0.4.39",
+    "kiara_plugin.onboarding==0.4.4",
+    "kiara_plugin.tabular==0.4.25",
     "kiara_plugin.language_processing==0.4.13",
     "seaborn==0.12.2",
     "observable-jupyter==0.1.14",
